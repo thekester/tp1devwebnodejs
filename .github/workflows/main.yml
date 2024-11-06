@@ -56,9 +56,8 @@ jobs:
     name: Deploy to Production
     needs: build-and-test
     runs-on: self-hosted  # Utiliser un runner auto-hébergé pour le déploiement
-    if: |
-      github.event_name == 'push' || 
-      github.event_name == 'workflow_dispatch'  # Déployer sur push et déclenchement manuel
+    if: >
+      github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout Repository
@@ -93,7 +92,7 @@ jobs:
         with:
           script: |
             github.issues.createComment({
-              issue_number: 1,  // Remplacez par le numéro de l'issue ou utilisez une autre méthode de notification
+              issue_number: 1,  # Remplacez par le numéro de l'issue ou utilisez une autre méthode de notification
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '✅ Déploiement en production réussi !'
