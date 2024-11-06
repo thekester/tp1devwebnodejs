@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]  # Utilise uniquement Node.js 20
+        node-version: [20.x]
 
     steps:
       - name: Checkout Repository
@@ -28,16 +28,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      # Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      # Attempt to fix vulnerabilities without breaking changes, continue on error if issues arise
       - name: Fix Vulnerabilities
         run: npm audit fix
         continue-on-error: true
 
-      # Force fix remaining vulnerabilities (if needed)
       - name: Force Fix Vulnerabilities (if needed)
         run: npm audit fix --force
         continue-on-error: true
@@ -56,7 +53,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20.x  # Utilise uniquement Node.js 20
+          node-version: 20.x
           cache: 'npm'
 
       - name: Install Dependencies
@@ -70,22 +67,15 @@ jobs:
         run: npm audit fix --force
         continue-on-error: true
 
-      # Installer PM2 globalement
       - name: Install PM2
         run: npm install -g pm2
 
-      # Configurer le dossier PM2 dans le répertoire de travail actuel
-      - name: Configure PM2 Directory
-        run: mkdir -p .pm2/logs .pm2/pids .pm2/modules
-
-      # Utiliser PM2 pour démarrer l'application en arrière-plan
-      - name: Start Server in Background with PM2
+      # Utiliser PM2 Runtime pour démarrer l'application en arrière-plan sans daemon
+      - name: Start Server in Background with PM2 Runtime
         env:
-          PM2_HOME: ${{ github.workspace }}/.pm2  # Utiliser un répertoire local pour PM2
+          PM2_HOME: ${{ github.workspace }}/.pm2
         run: |
-          pm2 stop app-name || true  # Arrêter l'ancienne instance si elle existe
-          pm2 start app.js --name app-name --watch  # Démarrer le serveur en arrière-plan
-          pm2 save
+          pm2-runtime start app.js --name app-name --watch
 
       - name: Notify Deployment Success
         if: success()
