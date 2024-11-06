@@ -81,11 +81,18 @@ docker-node-docker/
 
 In this section, you can track progress made throughout the project.
 
-### Example 1, Question 1 (ex1q1)
+### Exercise 1, Question 1 (ex1q1)
 ![Example 1 - Question 1](images/listedesproduitstp1ex1.png)
 
-### Example 1, Question 2 (ex1q2)
+### Exercise 1, Question 2 (ex1q2) and question3 (ex1q3)
 ![Example 1 - Question 2](gifs/ex1q2.gif)
+
+### Exercise 1, Question 4 (ex1q4)
+
+### Exercise 1, Question 5 (ex1q5)
+
+### Exercise 1, Question 6 (ex1q6)
+
 
 ## Additional Notes
 
