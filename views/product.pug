@@ -6,31 +6,12 @@ html
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css")
-    style.
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      h1 {
-        color: #333;
-      }
-      .product-details {
-        border: 1px solid #ddd;
-        padding: 20px;
-        background-color: #f9f9f9;
-        max-width: 600px;
-      }
-      .product-details p {
-        line-height: 1.6;
-      }
-      a {
-        text-decoration: none;
-        color: #007BFF;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
+    link(rel="stylesheet", href="/style/produit.css")
+
+
   body
+    .nav
+      a(href='/') Accueil
     h1= produit.nom
     .product-details
       p 
@@ -42,4 +23,42 @@ html
       p 
         strong Stock Disponible : 
         | #{produit.stock} articles
-    a(href='/') Retour à la liste des produits
+      if produit.stock > 0
+        button#acheter-btn.acheter-btn Acheter
+      else
+        button#acheter-btn.acheter-btn(disabled) Épuisé
+      #message
+    //- Inclure jQuery
+    script(src="/code/jquery.min.js")
+    script.
+      $(document).ready(function() {
+        $('#acheter-btn').click(function() {
+          // Vérifier si le bouton est désactivé
+          if ($(this).is(':disabled')) {
+            return;
+          }
+          
+          // Confirmation avant l'achat
+          if (confirm('Êtes-vous sûr de vouloir acheter ce produit ?')) {
+            $.ajax({
+              url: '/buy/' + #{produit.id},
+              type: 'POST',
+              success: function(response) {
+                $('#message').text(response.message);
+                if (response.success) {
+                  // Mettre à jour le stock affiché
+                  var nouveauStock = response.nouveauStock;
+                  $('.product-details p:nth-child(3)').html('<strong>Stock Disponible : </strong>' + nouveauStock + ' articles');
+                  // Si le stock est 0, désactiver le bouton et changer le texte
+                  if (nouveauStock === 0) {
+                    $('#acheter-btn').prop('disabled', true).text('Épuisé');
+                  }
+                }
+              },
+              error: function(xhr, status, error) {
+                $('#message').text('Erreur lors de l\'achat.');
+              }
+            });
+          }
+        });
+      });

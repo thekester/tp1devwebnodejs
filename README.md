@@ -86,13 +86,19 @@ In this section, you can track progress made throughout the project.
 
 ### Exercise 1, Question 2 (ex1q2) and question3 (ex1q3)
 ![Example 1 - Question 2](gifs/ex1q2.gif)
+![Example 1 - Question 2](gifs/listedesproduitsex1q2.mp4)
 
 ### Exercise 1, Question 4 (ex1q4)
+![Example 1 - Question 4](gifs/ex1q4.gif)
+![Example 1 - Question 4](gifs/ex1q4.mp4)
 
 ### Exercise 1, Question 5 (ex1q5)
+![Example 1 - Question 5](gifs/ex1q5.gif)
+![Example 1 - Question 5](gifs/ex1q5.mp4)
 
 ### Exercise 1, Question 6 (ex1q6)
-
+![Example 1 - Question 5](gifs/ex1q6.gif)
+![Example 1 - Question 5](gifs/ex1q6.mp4)
 
 ## Additional Notes
 
