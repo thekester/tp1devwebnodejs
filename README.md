@@ -48,7 +48,7 @@ docker-node-docker/
 
 4. **Install Dependencies**:
    ```sh
-   npm install express pug
+   npm install express pug sqlite3 dotenv
    ```
 
 ## Docker Configuration
@@ -62,6 +62,15 @@ docker-node-docker/
    ```sh
    docker run -d -p 5121:5121 --name docker-node-docker-container docker-node-docker
    ```
+
+docker-compose build
+docker-compose up -d
+docker-compose logs -f
+
+
+npm install --save-dev nodemon
+
+
 
 3. **Access the Container** (optional, for debugging or inspection):
    ```sh
@@ -99,6 +108,12 @@ In this section, you can track progress made throughout the project.
 ### Exercise 1, Question 6 (ex1q6)
 ![Example 1 - Question 5](gifs/ex1q6.gif)
 ![Example 1 - Question 5](gifs/ex1q6.mp4)
+
+### Exercise 2, Question 1 (ex2q1)
+### Exercise 2, Question 2 (ex2q2)
+### Exercise 2, Question 3 (ex2q3)
+### Exercise 2, Question 4 (ex2q4)
+### Exercise 2, Question 5 (ex2q5)
 
 ## Additional Notes
 

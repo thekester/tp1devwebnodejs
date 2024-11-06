@@ -1,0 +1,37 @@
+// views/achats.pug
+doctype html
+html
+  head
+    title= title
+    link(rel="stylesheet", href="/style/index.css")
+    link(rel="icon", type="image/x-icon", href="/images/favicon.ico")
+  body
+    header
+      nav
+        ul
+          li: a(href='/') Accueil
+          li: a(href='/achats') Achats
+    main
+      h1= title
+
+      if achats.length > 0
+        table(style="width: 100%; border-collapse: collapse;")
+          thead
+            tr
+              th(style="border: 1px solid #ddd; padding: 8px;") ID Transaction
+              th(style="border: 1px solid #ddd; padding: 8px;") Date
+              th(style="border: 1px solid #ddd; padding: 8px;") Message
+              th(style="border: 1px solid #ddd; padding: 8px;") Produit
+              th(style="border: 1px solid #ddd; padding: 8px;") Prix (€)
+              th(style="border: 1px solid #ddd; padding: 8px;") Numéro de Série
+          tbody
+            each achat in achats
+              tr
+                td(style="border: 1px solid #ddd; padding: 8px;")= achat.transaction_id
+                td(style="border: 1px solid #ddd; padding: 8px;")= new Date(achat.date).toLocaleString()
+                td(style="border: 1px solid #ddd; padding: 8px;")= achat.message
+                td(style="border: 1px solid #ddd; padding: 8px;")= achat.produit_nom
+                td(style="border: 1px solid #ddd; padding: 8px;")= achat.produit_prix.toFixed(2)
+                td(style="border: 1px solid #ddd; padding: 8px;")= achat.produit_numeroSerie
+      else
+        p Aucune transaction n'a été effectuée pour le moment.
