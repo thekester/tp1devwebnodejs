@@ -11,18 +11,38 @@ docker-node-docker/
 ├── Dockerfile
 ├── .dockerignore              # (Optional but recommended)
 │
+├── actions-runner/             # For the github workflow
+├── bdd/
+│   └── tavenel.db
 ├── views/
-│   └── temp_exemple.pug
+│   └── 404.pug
+│   └── achats.pug
+│   └── admin.pug
+│   └── index.pug
+│   └── product.pug
 │
 ├── public/
 │   └── code/
 │       └── jquery.min.js
+│   └── images/
+│       └── clavier-zeta.png
+│       └── favicon.ico
+│       └── montre-zeta.png
+│       └── ordinateurbeta.png
+│       └── smarthpone-alpha.png
+│       └── souris-eta.png
+│   └── style/
+│       └── 404.css
+│       └── admin.css
+│       └── index.css
+│       └── produit.css
 │
 ├── images/
 │   └── listdesproduitstp1ex1.png # Image for ex1q1
 │
 ├── gifs/
-│   └── ex1q2.gif                # GIF for ex1q2
+│   └── ex1q2.gif                # GIF for ex1q2 
+
 │
 └── node_modules/              # Generated automatically after `npm install`
 ```
@@ -31,10 +51,10 @@ docker-node-docker/
 
 1. **Create the Project Directories**:
    ```sh
-   mkdir -p mon-projet/views
-   mkdir -p mon-projet/public/code
-   mkdir -p mon-projet/images
-   mkdir -p mon-projet/gifs
+   mkdir -p docker-node-docker/views
+   mkdir -p docker-node-docker/public/code
+   mkdir -p docker-node-docker/images
+   mkdir -p docker-node-docker/gifs
    ```
 
 2. **Add jQuery Library**: 
@@ -51,6 +71,11 @@ docker-node-docker/
    npm install express pug sqlite3 dotenv
    ```
 
+5. **Optional Install Nodemon as a Development Dependency**:
+   ```sh
+      npm install --save-dev nodemon
+   ```
+
 ## Docker Configuration
 
 1. **Build Docker Image**:
@@ -63,21 +88,39 @@ docker-node-docker/
    docker run -d -p 5121:5121 --name docker-node-docker-container docker-node-docker
    ```
 
-docker-compose build
-docker-compose up -d
-docker-compose logs -f
-
-
-npm install --save-dev nodemon
-
-
-
 3. **Access the Container** (optional, for debugging or inspection):
    ```sh
    docker exec -it docker-node-docker-container /bin/bash
    ```
 
-## Branch Management
+## Alternative Method with Docker Compose
+
+1. **Build and Run Using Docker Compose**:
+   ```sh
+   docker-compose build
+   docker-compose up -d
+   ```
+
+2. **View Logs**:
+   ```sh
+   docker-compose logs -f
+   ```
+
+## Simple Method to Start the Application
+
+1. **Run Node Application Directly**:
+   ```sh
+   node app.js
+   ```
+
+## Another Method: Using GitHub Self-Hosted Runner
+
+1. **Set up a self-hosted GitHub Runner** to test the application during a CI/CD pipeline.
+   - Configure the runner to test the application for 40 seconds before completing the pipeline.
+   
+2. **Reference for Setup**: [GitHub Actions and PM2 Auto-Deploy](https://medium.com/@realshamshod01/set-up-auto-deploy-for-node-js-app-just-in-4-steps-using-github-actions-and-pm2-7d192fbd2c37)
+
+## Example Branch Management
 
 1. **Switch to Docker Environment Branch**:
    ```sh
@@ -98,22 +141,30 @@ In this section, you can track progress made throughout the project.
 ![Example 1 - Question 2](gifs/listedesproduitsex1q2.mp4)
 
 ### Exercise 1, Question 4 (ex1q4)
-![Example 1 - Question 4](gifs/ex1q4.gif)
-![Example 1 - Question 4](gifs/ex1q4.mp4)
+![Exercise 1 - Question 4](gifs/ex1q4.gif)
+![Exercise 1 - Question 4](gifs/ex1q4.mp4)
 
 ### Exercise 1, Question 5 (ex1q5)
-![Example 1 - Question 5](gifs/ex1q5.gif)
-![Example 1 - Question 5](gifs/ex1q5.mp4)
+![Exercise 1 - Question 5](gifs/ex1q5.gif)
+![Exercise 1 - Question 5](gifs/ex1q5.mp4)
 
 ### Exercise 1, Question 6 (ex1q6)
-![Example 1 - Question 5](gifs/ex1q6.gif)
-![Example 1 - Question 5](gifs/ex1q6.mp4)
+![Exercise 1 - Question 6](gifs/ex1q6.gif)
+![Exercise 1 - Question 6](gifs/ex1q6.mp4)
 
 ### Exercise 2, Question 1 (ex2q1)
 ### Exercise 2, Question 2 (ex2q2)
+![Exercise 2 - Question 2](gifs/ex2q2.mp4)
+
 ### Exercise 2, Question 3 (ex2q3)
+![Exercise 2 - Question 2](gifs/ex2q3.mp4)
+
 ### Exercise 2, Question 4 (ex2q4)
-### Exercise 2, Question 5 (ex2q5)
+![Exercise 2 - Question 2](gifs/ex2q4.mp4)
+
+### Execution of the CI/CD pipeline with self-host runner in github
+
+https://youtu.be/FfZZgWvjeGA
 
 ## Additional Notes
 
