@@ -82,7 +82,7 @@ docker-node-docker/
 In this section, you can track progress made throughout the project.
 
 ### Example 1, Question 1 (ex1q1)
-![Example 1 - Question 1](images/listdesproduitstp1ex1.png)
+![Example 1 - Question 1](images/listedesproduitstp1ex1.png)
 
 ### Example 1, Question 2 (ex1q2)
 ![Example 1 - Question 2](gifs/ex1q2.gif)
