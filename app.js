@@ -234,6 +234,40 @@ app.post('/buy/:id', (req, res) => {
   });
 });
 
+
+// Nouvelle Route pour afficher la liste de tous les achats effectués
+app.get('/achats', (req, res) => {
+  const query = `
+    SELECT 
+      transactions.id AS transaction_id,
+      transactions.date,
+      transactions.message,
+      products.nom AS produit_nom,
+      products.prix AS produit_prix,
+      products.numeroSerie AS produit_numeroSerie
+    FROM 
+      transactions
+    JOIN 
+      products 
+    ON 
+      transactions.product_id = products.id
+    ORDER BY 
+      transactions.date DESC
+  `;
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('Erreur lors de la récupération des achats:', err.message);
+      res.status(500).send('Erreur du serveur');
+    } else {
+      res.render('achats', { 
+        title: 'Liste des Achats Effectués', 
+        achats: rows 
+      });
+    }
+  });
+});
+
 // Route pour gérer une requête AJAX (exemple pour saluer un produit, à adapter selon besoins)
 app.get('/bonjour/:nom', (req, res) => {
   const nom = req.params.nom.trim();
