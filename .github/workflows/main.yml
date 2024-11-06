@@ -28,9 +28,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      # Use 'npm install' to avoid sync issues with the lock file
+      # Install dependencies
       - name: Install Dependencies
         run: npm install
+
+      # Run 'npm audit fix' to address vulnerabilities (non-breaking changes only)
+      - name: Fix Vulnerabilities
+        run: npm audit fix
+
+      # Optionally, force-fix remaining vulnerabilities if necessary (use with caution)
+      - name: Force Fix Vulnerabilities
+        run: npm audit fix --force
+        continue-on-error: true  # Allows the workflow to proceed even if this step fails
 
       - name: Lint Code
         run: npm run lint
@@ -70,9 +79,17 @@ jobs:
           node-version: 16.x
           cache: 'npm'
 
-      # Use 'npm install' to bypass strict lock file checks
+      # Install dependencies and fix vulnerabilities
       - name: Install Dependencies
         run: npm install
+
+      - name: Fix Vulnerabilities
+        run: npm audit fix
+
+      # Force fix remaining vulnerabilities (optional)
+      - name: Force Fix Vulnerabilities
+        run: npm audit fix --force
+        continue-on-error: true  # Allows the deployment to continue even if this step fails
 
       - name: Build Project
         run: npm run build
