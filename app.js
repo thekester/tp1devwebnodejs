@@ -1,4 +1,6 @@
 // app.js
+require('dotenv').config(); // Charger les variables d'environnement depuis .env
+
 const express = require('express');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose(); // Import sqlite3
@@ -19,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Connexion à la base de données SQLite
 
-const dbPath = path.join(__dirname, 'tavenel.db');
+const dbPath = path.join('./bdd', 'tavenel.db');
 console.log(`Chemin de la base de données: ${dbPath}`);
 
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -30,70 +32,71 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-
-// Création de la table 'products' si elle n'existe pas
-db.run(`
-  CREATE TABLE IF NOT EXISTS products (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,
-    annee INTEGER,
-    prix REAL,
-    stock INTEGER,
-    numeroSerie TEXT
-  )
-`, (err) => {
-  if (err) {
-    console.error('Erreur lors de la création de la table products:', err.message);
-  } else {
-    console.log('Table products prête.');
-    // Optionnel: Insérer des produits si la table est vide
-    db.get('SELECT COUNT(*) as count FROM products', (err, row) => {
-      if (err) {
-        console.error('Erreur lors de la vérification des produits:', err.message);
-      } else if (row.count === 0) {
-        const insert = 'INSERT INTO products (nom, annee, prix, stock, numeroSerie) VALUES (?, ?, ?, ?, ?)';
-        const products = [
-          ['Smartphone Alpha', 2023, 699.99, 25, 'SN123456'],
-          ['Ordinateur Portable Beta', 2024, 1299.99, 15, 'SN234567'],
-          ['Tablette Gamma', 2022, 399.99, 0, 'SN345678'], // En rupture de stock
-          ['Montre Connectée Delta', 2023, 199.99, 60, 'SN456789'],
-          ['Casque Audio Epsilon', 2024, 149.99, 0, 'SN567890'], // En rupture de stock
-          ['Clavier Zeta', 2023, 89.99, 10, 'SN678901'],
-          ['Souris Eta', 2022, 49.99, 5, 'SN789012']
-        ];
-        products.forEach((product) => {
-          db.run(insert, product, (err) => {
-            if (err) {
-              console.error('Erreur lors de l\'insertion d\'un produit:', err.message);
-            }
+// Initialisation de la base de données avec les tables nécessaires
+db.serialize(() => {
+  // Création de la table 'products' si elle n'existe pas
+  db.run(`
+    CREATE TABLE IF NOT EXISTS products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nom TEXT NOT NULL,
+      annee INTEGER,
+      prix REAL,
+      stock INTEGER,
+      numeroSerie TEXT
+    )
+  `, (err) => {
+    if (err) {
+      console.error('Erreur lors de la création de la table products:', err.message);
+    } else {
+      console.log('Table products prête.');
+      // Optionnel: Insérer des produits si la table est vide
+      db.get('SELECT COUNT(*) as count FROM products', (err, row) => {
+        if (err) {
+          console.error('Erreur lors de la vérification des produits:', err.message);
+        } else if (row.count === 0) {
+          const insert = 'INSERT INTO products (nom, annee, prix, stock, numeroSerie) VALUES (?, ?, ?, ?, ?)';
+          const products = [
+            ['Smartphone Alpha', 2023, 699.99, 25, 'SN123456'],
+            ['Ordinateur Portable Beta', 2024, 1299.99, 15, 'SN234567'],
+            ['Tablette Gamma', 2022, 399.99, 0, 'SN345678'], // En rupture de stock
+            ['Montre Connectée Delta', 2023, 199.99, 60, 'SN456789'],
+            ['Casque Audio Epsilon', 2024, 149.99, 0, 'SN567890'], // En rupture de stock
+            ['Clavier Zeta', 2023, 89.99, 10, 'SN678901'],
+            ['Souris Eta', 2022, 49.99, 5, 'SN789012']
+          ];
+          products.forEach((product) => {
+            db.run(insert, product, (err) => {
+              if (err) {
+                console.error('Erreur lors de l\'insertion d\'un produit:', err.message);
+              }
+            });
           });
-        });
-        console.log('Produits insérés dans la table products.');
-      }
-    });
-  }
-});
+          console.log('Produits insérés dans la table products.');
+        }
+      });
+    }
+  });
 
-// Création de la table 'transactions' si elle n'existe pas
-db.run(`
-  CREATE TABLE IF NOT EXISTS transactions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    product_id INTEGER,
-    date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    message TEXT,
-    FOREIGN KEY (product_id) REFERENCES products(id)
-  )
-`, (err) => {
-  if (err) {
-    console.error('Erreur lors de la création de la table transactions:', err.message);
-  } else {
-    console.log('Table transactions prête.');
-  }
+  // Création de la table 'transactions' si elle n'existe pas
+  db.run(`
+    CREATE TABLE IF NOT EXISTS transactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      product_id INTEGER,
+      date DATETIME DEFAULT CURRENT_TIMESTAMP,
+      message TEXT,
+      FOREIGN KEY (product_id) REFERENCES products(id)
+    )
+  `, (err) => {
+    if (err) {
+      console.error('Erreur lors de la création de la table transactions:', err.message);
+    } else {
+      console.log('Table transactions prête.');
+    }
+  });
 });
-
 
 // Gestion de l'arrêt du serveur pour fermer la connexion à la base de données
-//https://stackoverflow.com/questions/46908853/process-onsigint-multiple-termination-signals
+// https://stackoverflow.com/questions/46908853/process-onsigint-multiple-termination-signals
 
 // Fonction de gestion des signaux
 /**
@@ -138,10 +141,15 @@ app.get('/', (req, res) => {
   });
 });
 
-
 // Route pour afficher les détails d'un produit spécifique
 app.get('/product/:id', (req, res) => {
   const productId = parseInt(req.params.id, 10);
+  
+  // Validation de l'ID du produit
+  if (isNaN(productId) || productId < 1) {
+    return res.status(400).render('400', { message: 'ID de produit invalide.' });
+  }
+
   const query = 'SELECT * FROM products WHERE id = ?';
   
   db.get(query, [productId], (err, row) => {
@@ -160,63 +168,98 @@ app.get('/product/:id', (req, res) => {
   });
 });
 
-
 // Route pour gérer les achats
 app.post('/buy/:id', (req, res) => {
   const productId = parseInt(req.params.id, 10);
   
-  // Vérifier le stock actuel du produit
-  const selectQuery = 'SELECT * FROM products WHERE id = ?';
-  
-  db.get(selectQuery, [productId], (err, produit) => {
-    if (err) {
-      console.error('Erreur lors de la récupération du produit:', err.message);
-      res.status(500).json({ success: false, message: 'Erreur du serveur.' });
-    } else if (produit) {
-      if (produit.stock > 0) {
-        // Décrémenter le stock
-        const updateQuery = 'UPDATE products SET stock = stock - 1 WHERE id = ?';
-        
-        db.run(updateQuery, [productId], function(err) {
-          if (err) {
-            console.error('Erreur lors de la mise à jour du stock:', err.message);
-            res.status(500).json({ success: false, message: 'Erreur du serveur.' });
-          } else {
-            // Enregistrer la transaction
-            const insertTransaction = 'INSERT INTO transactions (product_id, message) VALUES (?, ?)';
-            db.run(insertTransaction, [productId, 'Achat effectué'], function(err) {
-              if (err) {
-                console.error('Erreur lors de l\'insertion de la transaction:', err.message);
-                res.status(500).json({ success: false, message: 'Erreur du serveur.' });
-              } else {
-                res.json({ success: true, message: 'Succès !', nouveauStock: produit.stock - 1 });
-              }
-            });
-          }
-        });
-      } else {
-        res.json({ success: false, message: 'Produit en rupture de stock.' });
+  // Validation de l'ID du produit
+  if (isNaN(productId) || productId < 1) {
+    return res.status(400).json({ success: false, message: 'ID de produit invalide.' });
+  }
+
+  db.serialize(() => {
+    db.run('BEGIN TRANSACTION');
+
+    // Vérifier le stock actuel du produit
+    const selectQuery = 'SELECT * FROM products WHERE id = ?';
+    db.get(selectQuery, [productId], (err, produit) => {
+      if (err) {
+        db.run('ROLLBACK');
+        console.error('Erreur lors de la récupération du produit:', err.message);
+        return res.status(500).json({ success: false, message: 'Erreur du serveur.' });
       }
-    } else {
-      res.status(404).json({ success: false, message: 'Produit non trouvé.' });
-    }
+
+      if (!produit) {
+        db.run('ROLLBACK');
+        return res.status(404).json({ success: false, message: 'Produit non trouvé.' });
+      }
+
+      if (produit.stock < 1) {
+        db.run('ROLLBACK');
+        return res.json({ success: false, message: 'Produit en rupture de stock.' });
+      }
+
+      // Décrémenter le stock
+      const updateQuery = 'UPDATE products SET stock = stock - 1 WHERE id = ?';
+      db.run(updateQuery, [productId], function(err) {
+        if (err) {
+          db.run('ROLLBACK');
+          console.error('Erreur lors de la mise à jour du stock:', err.message);
+          return res.status(500).json({ success: false, message: 'Erreur du serveur.' });
+        }
+
+        // Enregistrer la transaction avec un message enrichi
+        const insertTransaction = 'INSERT INTO transactions (product_id, message) VALUES (?, ?)';
+        const message = `Achat de "${produit.nom}" au prix de ${produit.prix}€ effectué.`;
+        db.run(insertTransaction, [productId, message], function(err) {
+          if (err) {
+            db.run('ROLLBACK');
+            console.error('Erreur lors de l\'insertion de la transaction:', err.message);
+            return res.status(500).json({ success: false, message: 'Erreur du serveur.' });
+          }
+
+          // Valider la transaction
+          db.run('COMMIT', (err) => {
+            if (err) {
+              db.run('ROLLBACK');
+              console.error('Erreur lors de la validation de la transaction:', err.message);
+              return res.status(500).json({ success: false, message: 'Erreur du serveur.' });
+            }
+
+            res.json({ success: true, message: 'Achat réussi !', nouveauStock: produit.stock - 1 });
+          });
+        });
+      });
+    });
   });
 });
 
-
 // Route pour gérer une requête AJAX (exemple pour saluer un produit, à adapter selon besoins)
 app.get('/bonjour/:nom', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(JSON.stringify({ message: 'Bonjour ' + req.params.nom + '!' }));
-});
+  const nom = req.params.nom.trim();
 
+  if (!nom) {
+    return res.status(400).json({ message: 'Nom invalide.' });
+  }
+
+  res.json({ message: `Bonjour ${nom} !` });
+});
 
 // Route 404 pour les autres chemins non définis
 app.use((req, res) => {
   res.status(404).render('404');
 });
 
-// Démarrage du serveur
+// Route 400 pour les requêtes invalides
+app.use((err, req, res, next) => {
+  if (err.status === 400) {
+    res.status(400).render('400', { message: err.message });
+  } else {
+    next(err);
+  }
+});
+
+// Démarrage du serveur avec port configurable via variable d'environnement
 const PORT = process.env.PORT || 5121;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);

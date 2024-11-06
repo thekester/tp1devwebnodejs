@@ -48,7 +48,7 @@ docker-node-docker/
 
 4. **Install Dependencies**:
    ```sh
-   npm install express pug sqlite3
+   npm install express pug sqlite3 dotenv
    ```
 
 ## Docker Configuration
@@ -62,6 +62,15 @@ docker-node-docker/
    ```sh
    docker run -d -p 5121:5121 --name docker-node-docker-container docker-node-docker
    ```
+
+docker-compose build
+docker-compose up -d
+docker-compose logs -f
+
+
+npm install --save-dev nodemon
+
+
 
 3. **Access the Container** (optional, for debugging or inspection):
    ```sh
