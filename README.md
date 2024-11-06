@@ -88,6 +88,7 @@ In this section, you can track progress made throughout the project.
 ![Example 1 - Question 2](gifs/ex1q2.gif)
 
 ### Exercise 1, Question 4 (ex1q4)
+![Example 1 - Question 4](gifs/ex1q4.gif)
 
 ### Exercise 1, Question 5 (ex1q5)
 
