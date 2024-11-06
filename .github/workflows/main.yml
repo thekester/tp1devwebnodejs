@@ -74,6 +74,12 @@ jobs:
       - name: Install PM2
         run: npm install -g pm2
 
+      # Configurer le dossier PM2 avec les permissions appropriées
+      - name: Configure PM2 Directory Permissions
+        run: |
+          mkdir -p /home/runner/.pm2/logs /home/runner/.pm2/pids /home/runner/.pm2/modules
+          chmod -R 777 /home/runner/.pm2  # Octroi des permissions en écriture
+
       # Utiliser PM2 pour démarrer l'application en arrière-plan
       - name: Start Server in Background with PM2
         env:
