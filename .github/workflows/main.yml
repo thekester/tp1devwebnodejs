@@ -9,6 +9,9 @@ on:
       - '**'
   workflow_dispatch: 
 
+permissions:
+  issues: write  # Autorisation pour créer un commentaire sur une issue
+
 jobs:
   build-and-test:
     name: Build and Test
@@ -67,7 +70,7 @@ jobs:
         run: npm audit fix --force
         continue-on-error: true
 
-      # Lancer l'application en arrière-plan avec nohup pour éviter le blocage
+      # Lancer l'application en arrière-plan avec nohup
       - name: Start Server in Background
         run: nohup node app.js > output.log 2>&1 &
 
@@ -76,9 +79,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            github.issues.createComment({
-              issue_number: 1,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+            github.rest.issues.createComment({
+              ...context.issue,
               body: '✅ Déploiement en production réussi !'
             })
