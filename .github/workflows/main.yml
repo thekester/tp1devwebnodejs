@@ -34,20 +34,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Fix Vulnerabilities
-        run: npm audit fix
-        continue-on-error: true
-
-      - name: Force Fix Vulnerabilities (if needed)
+      # Forcer la correction des vulnérabilités
+      - name: Force Fix Vulnerabilities
         run: npm audit fix --force
-        continue-on-error: true
 
   deploy:
     name: Deploy to Production
     needs: build-and-test
     runs-on: self-hosted
     if: >
-      github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+      github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
 
     steps:
       - name: Checkout Repository
@@ -62,20 +58,17 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Fix Vulnerabilities
-        run: npm audit fix
-        continue-on-error: true
-
-      - name: Force Fix Vulnerabilities (if needed)
+      # Forcer la correction des vulnérabilités dans l'étape de déploiement
+      - name: Force Fix Vulnerabilities
         run: npm audit fix --force
-        continue-on-error: true
 
       # Lancer l'application en arrière-plan avec nohup
       - name: Start Server in Background
         run: nohup node app.js > output.log 2>&1 &
 
-      - name: Notify Deployment Success
-        if: success()
+      # Ajouter un commentaire GitHub uniquement pour les événements pull_request
+      - name: Notify Deployment Success (Pull Request)
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           script: |
@@ -83,3 +76,8 @@ jobs:
               ...context.issue,
               body: '✅ Déploiement en production réussi !'
             })
+
+      # Simple sortie console pour les événements push et workflow_dispatch
+      - name: Log Deployment Success (Push/Dispatch)
+        if: github.event_name != 'pull_request'
+        run: echo "✅ Déploiement en production réussi !"
