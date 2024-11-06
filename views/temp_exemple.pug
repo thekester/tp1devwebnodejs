@@ -1,0 +1,23 @@
+doctype html
+html
+  head
+    title= title
+  body
+    div
+      | Sélection personne :
+      for nom in noms
+        label
+          input(type="radio", name="lesnoms", value=nom)
+          span Personne : #{nom}
+        br
+    div
+      input(type="button", onclick="envoyer()", value="OK")
+    #message
+    //- Assurez-vous que jQuery est correctement placé dans le répertoire public/code/
+    script(src="/code/jquery.min.js")
+    script.
+      function envoyer() {
+        $.get('/bonjour/' + $('[name=lesnoms]:checked').val(), function(data) {
+          $('#message').html(data.message);
+        }, 'json');
+      }

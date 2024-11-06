@@ -1,0 +1,30 @@
+docker-node-docker/
+│
+├── app.js
+├── package.json
+├── package-lock.json          # Généré automatiquement après `npm install`
+├── Dockerfile
+├── .dockerignore              # (Optionnel mais recommandé)
+│
+├── views/
+│   └── temp_exemple.pug
+│
+├── public/
+│   └── code/
+│       └── jquery.min.js
+│
+└── node_modules/              # Généré automatiquement après `npm install`
+
+mkdir -p mon-projet/views
+mkdir -p mon-projet/public/code
+
+Lien du jquery https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js
+
+cd docker-node-docker/
+npm init -y
+npm install express pug
+
+docker build -t docker-node-docker .
+docker run -d -p 5121:5121 --name docker-node-docker-container docker-node-docker
+
+docker exec -it docker-node-docker-container /bin/bash
