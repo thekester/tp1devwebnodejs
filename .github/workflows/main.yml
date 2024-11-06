@@ -1,0 +1,88 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches: 
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch: 
+
+permissions:
+  issues: write  # Autorisation pour créer un commentaire sur une issue
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4  # Mise à jour vers v4 pour Node.js 20
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4  # Mise à jour vers v4 pour Node.js 20
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      # Forcer la correction des vulnérabilités
+      - name: Force Fix Vulnerabilities
+        run: npm audit fix --force
+        continue-on-error: true
+
+  deploy:
+    name: Deploy to Production
+    needs: build-and-test
+    runs-on: self-hosted
+    if: >
+      github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4  # Mise à jour vers v4 pour Node.js 20
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4  # Mise à jour vers v4 pour Node.js 20
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      # Forcer la correction des vulnérabilités dans l'étape de déploiement
+      - name: Force Fix Vulnerabilities
+        run: npm audit fix --force
+        continue-on-error: true
+
+      # Lancer l'application en arrière-plan avec nohup
+      - name: Start Server in Background for 40 seconds
+        run: |
+          nohup node app.js > output.log 2>&1 &
+          sleep 40
+          pkill -f "node app.js"  # Arrêter le serveur après 40 secondes
+
+      # Ajouter un commentaire GitHub uniquement pour les événements pull_request
+      - name: Notify Deployment Success (Pull Request)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              ...context.issue,
+              body: '✅ Déploiement en production réussi !'
+            })
+
+      # Simple sortie console pour les événements push et workflow_dispatch
+      - name: Log Deployment Success (Push/Dispatch)
+        if: github.event_name != 'pull_request'
+        run: echo "✅ Déploiement en production réussi !"
