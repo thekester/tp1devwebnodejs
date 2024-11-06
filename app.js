@@ -14,6 +14,8 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware pour servir les fichiers statiques
 app.use('/code', express.static(path.join(__dirname, 'public', 'code')));
 app.use('/style', express.static(path.join(__dirname, 'public', 'style'))); // Serve CSS files
+app.use('/images', express.static(path.join(__dirname, 'public', 'images'))); // Serve images
+
 
 // Middleware pour parser les requêtes POST
 app.use(express.json());
@@ -265,6 +267,63 @@ app.get('/achats', (req, res) => {
         achats: rows 
       });
     }
+  });
+});
+
+
+// Nouvelle Route pour l'administration : création de nouveaux produits
+app.get('/admin', (req, res) => {
+  res.render('admin', { 
+    title: 'Administration - Ajouter un Nouveau Produit' 
+  });
+});
+
+app.post('/admin', (req, res) => {
+  const { nom, annee, prix, stock, numeroSerie } = req.body;
+
+  // Validation des champs
+  if (!nom || !annee || !prix || !stock || !numeroSerie) {
+    return res.status(400).render('admin', { 
+      title: 'Administration - Ajouter un Nouveau Produit',
+      error: 'Tous les champs sont obligatoires.',
+      nom, annee, prix, stock, numeroSerie
+    });
+  }
+
+  const anneeInt = parseInt(annee, 10);
+  const prixFloat = parseFloat(prix);
+  const stockInt = parseInt(stock, 10);
+
+  if (isNaN(anneeInt) || isNaN(prixFloat) || isNaN(stockInt)) {
+    return res.status(400).render('admin', { 
+      title: 'Administration - Ajouter un Nouveau Produit',
+      error: 'L\'année, le prix et le stock doivent être des nombres valides.',
+      nom, annee, prix, stock, numeroSerie
+    });
+  }
+
+  const insertQuery = 'INSERT INTO products (nom, annee, prix, stock, numeroSerie) VALUES (?, ?, ?, ?, ?)';
+
+  db.run(insertQuery, [nom, anneeInt, prixFloat, stockInt, numeroSerie], function(err) {
+    if (err) {
+      console.error('Erreur lors de l\'insertion du nouveau produit:', err.message);
+      return res.status(500).render('admin', { 
+        title: 'Administration - Ajouter un Nouveau Produit',
+        error: 'Erreur lors de la création du produit. Veuillez réessayer.',
+        nom, annee, prix, stock, numeroSerie
+      });
+    }
+
+    // Rediriger vers la page admin avec un message de succès
+    res.render('admin', { 
+      title: 'Administration - Ajouter un Nouveau Produit',
+      success: `Produit "${nom}" ajouté avec succès !`,
+      nom: '', 
+      annee: '', 
+      prix: '', 
+      stock: '', 
+      numeroSerie: '' 
+    });
   });
 });
 
