@@ -67,15 +67,9 @@ jobs:
         run: npm audit fix --force
         continue-on-error: true
 
-      - name: Install PM2
-        run: npm install -g pm2
-
-      # Utiliser PM2 Runtime pour démarrer l'application en arrière-plan sans daemon
-      - name: Start Server in Background with PM2 Runtime
-        env:
-          PM2_HOME: ${{ github.workspace }}/.pm2
-        run: |
-          pm2-runtime start app.js --name app-name --watch
+      # Lancer l'application en arrière-plan avec nohup pour éviter le blocage
+      - name: Start Server in Background
+        run: nohup node app.js > output.log 2>&1 &
 
       - name: Notify Deployment Success
         if: success()
