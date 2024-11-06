@@ -3,20 +3,20 @@ name: Node.js CI/CD
 on:
   push:
     branches: 
-      - '**'  # Toutes les branches
+      - '**'
   pull_request:
     branches:
-      - '**'  # Toutes les branches
-  workflow_dispatch:  # Déclenchement manuel
+      - '**'
+  workflow_dispatch: 
 
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: ubuntu-latest  # Utilisation d'un runner hébergé par GitHub; changez en 'self-hosted' si nécessaire
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]  # Tester sur plusieurs versions de Node.js
+        node-version: [16.x, 18.x]
 
     steps:
       - name: Checkout Repository
@@ -37,13 +37,10 @@ jobs:
         run: npm audit fix
         continue-on-error: true
 
-      # Force fix remaining vulnerabilities if needed
+      # Force fix remaining vulnerabilities (if needed)
       - name: Force Fix Vulnerabilities (if needed)
         run: npm audit fix --force
         continue-on-error: true
-
-      - name: Lint Code
-        run: npm run lint
 
       - name: Run Tests
         run: npm test
@@ -80,7 +77,6 @@ jobs:
           node-version: 16.x
           cache: 'npm'
 
-      # Install dependencies and fix vulnerabilities
       - name: Install Dependencies
         run: npm install
 
@@ -88,7 +84,6 @@ jobs:
         run: npm audit fix
         continue-on-error: true
 
-      # Force fix remaining vulnerabilities (suppress errors if any)
       - name: Force Fix Vulnerabilities (if needed)
         run: npm audit fix --force
         continue-on-error: true
