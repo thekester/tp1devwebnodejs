@@ -70,6 +70,10 @@ jobs:
         run: npm audit fix --force
         continue-on-error: true
 
+      # Installer PM2 globalement
+      - name: Install PM2
+        run: npm install -g pm2
+
       # Utiliser PM2 pour démarrer l'application en arrière-plan
       - name: Start Server in Background with PM2
         env:
