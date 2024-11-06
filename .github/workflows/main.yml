@@ -70,16 +70,13 @@ jobs:
         run: npm audit fix --force
         continue-on-error: true
 
-      # Lancer directement l'application sans "build"
-      - name: Launch Project
-        run: node app.js
-
-      - name: Deploy with PM2
+      # Utiliser PM2 pour démarrer l'application en arrière-plan
+      - name: Start Server in Background with PM2
         env:
           PM2_HOME: /home/runner/.pm2
         run: |
-          pm2 stop app-name || true
-          pm2 start app.js --name app-name --watch
+          pm2 stop app-name || true  # Arrêter l'ancienne instance si elle existe
+          pm2 start app.js --name app-name --watch  # Démarrer le serveur en arrière-plan
           pm2 save
 
       - name: Notify Deployment Success
