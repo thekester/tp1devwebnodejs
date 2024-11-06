@@ -6,51 +6,9 @@ html
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css")
-    style.
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      h1 {
-        color: #333;
-      }
-      .nav {
-        margin-bottom: 20px;
-      }
-      .nav a {
-        margin-right: 15px;
-        text-decoration: none;
-        color: #007BFF;
-      }
-      .nav a:hover {
-        text-decoration: underline;
-      }
-      .product-details {
-        border: 1px solid #ddd;
-        padding: 20px;
-        background-color: #f9f9f9;
-        max-width: 600px;
-      }
-      .product-details p {
-        line-height: 1.6;
-      }
-      .acheter-btn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #28a745;
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-      }
-      .acheter-btn:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-      }
-      #message {
-        margin-top: 20px;
-        font-weight: bold;
-      }
+    link(rel="stylesheet", href="/style/produit.css")
+
+
   body
     .nav
       a(href='/') Accueil
@@ -65,13 +23,21 @@ html
       p 
         strong Stock Disponible : 
         | #{produit.stock} articles
-      button#acheter-btn.acheter-btn Acheter
+      if produit.stock > 0
+        button#acheter-btn.acheter-btn Acheter
+      else
+        button#acheter-btn.acheter-btn(disabled) Épuisé
       #message
     //- Inclure jQuery
     script(src="/code/jquery.min.js")
     script.
       $(document).ready(function() {
         $('#acheter-btn').click(function() {
+          // Vérifier si le bouton est désactivé
+          if ($(this).is(':disabled')) {
+            return;
+          }
+          
           // Confirmation avant l'achat
           if (confirm('Êtes-vous sûr de vouloir acheter ce produit ?')) {
             $.ajax({
@@ -83,9 +49,9 @@ html
                   // Mettre à jour le stock affiché
                   var nouveauStock = response.nouveauStock;
                   $('.product-details p:nth-child(3)').html('<strong>Stock Disponible : </strong>' + nouveauStock + ' articles');
-                  // Si le stock est 0, désactiver le bouton
+                  // Si le stock est 0, désactiver le bouton et changer le texte
                   if (nouveauStock === 0) {
-                    $('#acheter-btn').prop('disabled', true);
+                    $('#acheter-btn').prop('disabled', true).text('Épuisé');
                   }
                 }
               },
