@@ -1,0 +1,95 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches: 
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+  workflow_dispatch: 
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      # Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Attempt to fix vulnerabilities without breaking changes, continue on error if issues arise
+      - name: Fix Vulnerabilities
+        run: npm audit fix
+        continue-on-error: true
+
+      # Force fix remaining vulnerabilities (if needed)
+      - name: Force Fix Vulnerabilities (if needed)
+        run: npm audit fix --force
+        continue-on-error: true
+
+  deploy:
+    name: Deploy to Production
+    needs: build-and-test
+    runs-on: self-hosted
+    if: >
+      github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Fix Vulnerabilities
+        run: npm audit fix
+        continue-on-error: true
+
+      - name: Force Fix Vulnerabilities (if needed)
+        run: npm audit fix --force
+        continue-on-error: true
+
+      # Lancer directement l'application sans "build"
+      - name: Launch Project
+        run: node app.js
+
+      - name: Deploy with PM2
+        env:
+          PM2_HOME: /home/runner/.pm2
+        run: |
+          pm2 stop app-name || true
+          pm2 start app.js --name app-name --watch
+          pm2 save
+
+      - name: Notify Deployment Success
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: 1,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ Déploiement en production réussi !'
+            })
