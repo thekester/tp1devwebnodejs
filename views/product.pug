@@ -1,0 +1,45 @@
+//- views/product.pug
+doctype html
+html
+  head
+    title= title
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css")
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      .product-details {
+        border: 1px solid #ddd;
+        padding: 20px;
+        background-color: #f9f9f9;
+        max-width: 600px;
+      }
+      .product-details p {
+        line-height: 1.6;
+      }
+      a {
+        text-decoration: none;
+        color: #007BFF;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+  body
+    h1= produit.nom
+    .product-details
+      p 
+        strong Année de Production : 
+        | #{produit.annee}
+      p 
+        strong Prix : 
+        | #{produit.prix} €
+      p 
+        strong Stock Disponible : 
+        | #{produit.stock} articles
+    a(href='/') Retour à la liste des produits
