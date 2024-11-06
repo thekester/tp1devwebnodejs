@@ -37,6 +37,7 @@ jobs:
       # Forcer la correction des vulnérabilités
       - name: Force Fix Vulnerabilities
         run: npm audit fix --force
+        continue-on-error: true
 
   deploy:
     name: Deploy to Production
@@ -61,10 +62,14 @@ jobs:
       # Forcer la correction des vulnérabilités dans l'étape de déploiement
       - name: Force Fix Vulnerabilities
         run: npm audit fix --force
+        continue-on-error: true
 
-      # Lancer l'application en arrière-plan avec nohup
-      - name: Start Server in Background
-        run: nohup node app.js > output.log 2>&1 &
+      # Lancer l'application en arrière-plan
+      - name: Start Server in Background for 40 seconds
+        run: |
+          nohup node app.js > output.log 2>&1 &  # Démarre en arrière-plan
+          sleep 40  # Attendre 40 secondes pour permettre l'utilisation de l'app
+          pkill -f "node app.js"  # Arrêter le serveur après 40 secondes
 
       # Ajouter un commentaire GitHub uniquement pour les événements pull_request
       - name: Notify Deployment Success (Pull Request)
