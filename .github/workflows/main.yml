@@ -32,11 +32,12 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Attempt to fix vulnerabilities (non-breaking changes only)
+      # Attempt to fix vulnerabilities without breaking changes, continue on error if issues arise
       - name: Fix Vulnerabilities
         run: npm audit fix
+        continue-on-error: true
 
-      # Force fix remaining vulnerabilities (suppress errors if any)
+      # Force fix remaining vulnerabilities if needed
       - name: Force Fix Vulnerabilities (if needed)
         run: npm audit fix --force
         continue-on-error: true
@@ -85,6 +86,7 @@ jobs:
 
       - name: Fix Vulnerabilities
         run: npm audit fix
+        continue-on-error: true
 
       # Force fix remaining vulnerabilities (suppress errors if any)
       - name: Force Fix Vulnerabilities (if needed)
