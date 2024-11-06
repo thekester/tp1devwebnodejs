@@ -1,4 +1,4 @@
-//- views/index.pug
+//- views/product.pug
 doctype html
 html
   head
@@ -14,15 +14,14 @@ html
       h1 {
         color: #333;
       }
-      ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      li {
-        background: #f9f9f9;
-        margin: 5px 0;
-        padding: 10px;
+      .product-details {
         border: 1px solid #ddd;
+        padding: 20px;
+        background-color: #f9f9f9;
+        max-width: 600px;
+      }
+      .product-details p {
+        line-height: 1.6;
       }
       a {
         text-decoration: none;
@@ -32,8 +31,15 @@ html
         text-decoration: underline;
       }
   body
-    h1 Liste des Produits
-    ul
-      each produit in produits
-        li
-          a(href=`/product/${produit.id}`)= produit.nom
+    h1= produit.nom
+    .product-details
+      p 
+        strong Année de Production : 
+        | #{produit.annee}
+      p 
+        strong Prix : 
+        | #{produit.prix} €
+      p 
+        strong Stock Disponible : 
+        | #{produit.stock} articles
+    a(href='/') Retour à la liste des produits

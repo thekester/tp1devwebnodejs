@@ -18,6 +18,12 @@ docker-node-docker/
 │   └── code/
 │       └── jquery.min.js
 │
+├── images/
+│   └── listdesproduitstp1ex1.png # Image for ex1q1
+│
+├── gifs/
+│   └── ex1q2.gif                # GIF for ex1q2
+│
 └── node_modules/              # Generated automatically after `npm install`
 ```
 
@@ -27,6 +33,8 @@ docker-node-docker/
    ```sh
    mkdir -p mon-projet/views
    mkdir -p mon-projet/public/code
+   mkdir -p mon-projet/images
+   mkdir -p mon-projet/gifs
    ```
 
 2. **Add jQuery Library**: 
@@ -69,10 +77,24 @@ docker-node-docker/
    
    This will set up a new branch `CreateTheDockerEnvironment` that tracks `origin/CreateTheDockerEnvironment`.
 
+## My Progress
+
+In this section, you can track progress made throughout the project.
+
+### Example 1, Question 1 (ex1q1)
+![Example 1 - Question 1](images/listdesproduitstp1ex1.png)
+
+### Example 1, Question 2 (ex1q2)
+![Example 1 - Question 2](gifs/ex1q2.gif)
+
 ## Additional Notes
 
 - Ensure that Docker is running on your system to build and run the container.
 - The `views/` folder contains `.pug` files for templating, and the `public/` folder holds static files such as JavaScript.
+- The `images/` folder contains images that can be used in your application.
+  - Image for `ex1q1` is `listdesproduitstp1ex1.png`.
+- The `gifs/` folder contains animations that can be used for visual effect.
+  - GIF for `ex1q2` is `ex1q2.gif`.
 - The `Dockerfile` should define how the Docker image is built and include the necessary configuration to expose port 5121.
 
 ## Useful Commands
