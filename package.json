@@ -1,0 +1,13 @@
+{
+    "name": "docker-node-docker",
+    "version": "1.0.0",
+    "description": "Une application Express avec Pug",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "pug": "^3.0.2"
+    }
+}
